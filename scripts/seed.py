@@ -21,14 +21,17 @@ async def load_json(filename):
     with open(file_path, "r") as f:
         return json.load(f)
 
-async def seed_data():
-    # 1. Recreate tables to ensure a clean slate
-    # WARNING: This wipes existing data!
-    async with engine.begin() as conn:
-        print("Dropping existing tables...")
-        await conn.run_sync(Base.metadata.drop_all)
-        print("Creating new tables...")
-        await conn.run_sync(Base.metadata.create_all)
+async def seed_data(reset=True):
+    if reset:
+        # 1. Recreate tables to ensure a clean slate
+        # WARNING: This wipes existing data!
+        async with engine.begin() as conn:
+            print("Dropping existing tables...")
+            await conn.run_sync(Base.metadata.drop_all)
+            print("Creating new tables...")
+            await conn.run_sync(Base.metadata.create_all)
+    else:
+         print("Skipping table reset (reset=False)...")
 
     # 2. Start a DB session to insert data
     async with AsyncSessionLocal() as session:

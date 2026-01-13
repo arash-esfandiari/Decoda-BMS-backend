@@ -2,7 +2,12 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
-from api.controllers import patients, analytics, appointments, services, providers, dashboard
+from api.controllers import patients, analytics, appointments, services, providers, dashboard, admin
+
+from sqlalchemy import select
+from database import AsyncSessionLocal
+from models import Patient
+from scripts.seed import seed_data
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -10,6 +15,17 @@ async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         # In production, we might use alembic instead of create_all
         await conn.run_sync(Base.metadata.create_all)
+    
+    # Check if DB is empty and seed if necessary
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(select(Patient).limit(1))
+        patient = result.scalar_one_or_none()
+        if not patient:
+            print("Database appears empty. seeding data...")
+            await seed_data(reset=False)
+        else:
+            print("Database already contains data. Skipping seed.")
+
     yield
     # Shutdown
     await engine.dispose()
@@ -18,7 +34,7 @@ app = FastAPI(title="Beauty Med Spa API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000", "https://decodabms.netlify.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -30,6 +46,7 @@ app.include_router(appointments.router)
 app.include_router(services.router)
 app.include_router(providers.router)
 app.include_router(dashboard.router)
+app.include_router(admin.router)
 
 @app.get("/")
 async def root():
