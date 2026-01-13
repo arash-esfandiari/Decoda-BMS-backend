@@ -58,6 +58,34 @@ class ProviderAnalytics(BaseModel):
     average_ticket: float
 
 
+class TopPatient(BaseModel):
+    id: str
+    name: str
+    total_spent: float
+    visit_count: int
+    last_visit: Optional[datetime]
+
+
+class RetentionOpportunity(BaseModel):
+    id: str
+    name: str
+    last_visit: datetime
+    days_since_last_visit: int
+    phone: str
+    email: str
+
+
+class PatientAnalyticsResponse(BaseModel):
+    total_patients: int
+    by_source: List[Dict[str, Any]]
+    by_gender: List[Dict[str, Any]]
+    average_age: float
+    by_decade: List[Dict[str, Any]]
+    top_patients: List[TopPatient] = []
+    retention_opportunities: List[RetentionOpportunity] = []
+
+
+
 
 
 class ServiceAnalytics(BaseModel):

@@ -33,6 +33,26 @@ class AnalyticsSummary(BaseModel):
     revenue_trend: List[RevenueTrend]
     patterns: AppointmentPattern
     provider_performance: ProviderPerformance
+    top_patients: List["TopPatient"] = []
+    retention_opportunities: List["RetentionOpportunity"] = []
+
+from datetime import datetime
+from typing import Optional
+
+class TopPatient(BaseModel):
+    id: str
+    name: str
+    total_spent: float
+    visit_count: int
+    last_visit: Optional[datetime]
+
+class RetentionOpportunity(BaseModel):
+    id: str
+    name: str
+    last_visit: datetime
+    days_since_last_visit: int
+    phone: str
+    email: str
 
 class PatientAnalyticsResponse(BaseModel):
     total_patients: int

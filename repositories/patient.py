@@ -104,5 +104,111 @@ class PatientRepository(BaseRepository[Patient]):
             "by_source": by_source,
             "by_gender": by_gender,
             "average_age": round(float(avg_age), 1),
-            "by_decade": by_decade
+            "by_decade": by_decade,
+            "top_patients": await self.get_top_patients(),
+            "retention_opportunities": await self.get_retention_opportunities()
         }
+
+    async def get_top_patients(self, limit: int = 5) -> list[dict]:
+        from models import Payment, Appointment
+        
+        # Top patients by total payment amount
+        stmt = (
+            select(
+                self.model.id,
+                func.concat(self.model.first_name, ' ', self.model.last_name).label('name'),
+                func.sum(Payment.amount).label('total_spent'),
+                func.count(func.distinct(Appointment.id)).label('visit_count'),
+                func.max(Payment.date).label('last_visit')
+            )
+            .join(Payment, Payment.patient_id == self.model.id)
+            .outerjoin(Appointment, Appointment.patient_id == self.model.id)
+            .group_by(self.model.id, self.model.first_name, self.model.last_name)
+            .order_by(func.sum(Payment.amount).desc())
+            .limit(limit)
+        )
+        
+        result = await self.session.execute(stmt)
+        return [
+            {
+                "id": r.id, 
+                "name": r.name, 
+                "total_spent": (r.total_spent or 0) / 100.0, # Convert cents to dollars
+                "visit_count": r.visit_count,
+                "last_visit": r.last_visit
+            } 
+            for r in result
+        ]
+
+    async def get_retention_opportunities(self, limit: int = 5) -> list[dict]:
+        from models import Appointment, AppointmentService
+        from datetime import datetime, timedelta
+        
+        # Logic:
+        # 1. Regulars: At least 2 past appointments
+        # 2. At risk: Last appointment was > 60 days ago
+        # 3. Opportunity: No future appointments booked
+        
+        sixty_days_ago = datetime.now() - timedelta(days=60)
+        now = datetime.now()
+        
+        # Subquery for last appointment date per patient
+        # We need to join Appointment -> AppointmentService to get the actual date
+        
+        stmt = (
+            select(
+                self.model.id,
+                func.concat(self.model.first_name, ' ', self.model.last_name).label('name'),
+                self.model.phone,
+                self.model.email,
+                func.max(AppointmentService.start).label('last_visit'),
+                func.count(func.distinct(Appointment.id)).label('visit_count')
+            )
+            .join(Appointment, Appointment.patient_id == self.model.id)
+            .join(AppointmentService, AppointmentService.appointment_id == Appointment.id)
+            .group_by(self.model.id, self.model.first_name, self.model.last_name, self.model.phone, self.model.email)
+            .having(
+                (func.count(func.distinct(Appointment.id)) >= 2) & 
+                (func.max(AppointmentService.start) < sixty_days_ago)
+            )
+        )
+        
+        # Execute and filter in python for "no future appointments" 
+        # (Doing pure SQL for "no future" with having/subqueries is complex in asyncpg/sqlalchemy randomly sometimes, 
+        # easier to filter the small list of candidates or use a NOT EXISTS)
+        
+        # Let's try adding a NOT EXISTS clause for robustness
+        # Actually, simpler: fetch candidates, then check if they have future appts.
+        
+        result = await self.session.execute(stmt)
+        candidates = result.all()
+        
+        opportunities = []
+        for r in candidates:
+            # Check for future appointments
+            future_check = (
+                select(func.count(Appointment.id))
+                .join(AppointmentService)
+                .where(
+                    (Appointment.patient_id == r.id) &
+                    (AppointmentService.start > now) &
+                    (Appointment.status != 'cancelled')
+                )
+            )
+            future_count = await self.session.scalar(future_check) or 0
+            
+            if future_count == 0:
+                days_since = (now - r.last_visit).days
+                opportunities.append({
+                    "id": r.id,
+                    "name": r.name,
+                    "last_visit": r.last_visit,
+                    "days_since_last_visit": days_since,
+                    "phone": r.phone,
+                    "email": r.email
+                })
+                
+        # Sort by days since last visit (descending) -> most overdue first
+        opportunities.sort(key=lambda x: x['days_since_last_visit'], reverse=True)
+        
+        return opportunities[:limit]

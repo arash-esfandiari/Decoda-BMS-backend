@@ -95,5 +95,8 @@ class AnalyticsService:
             provider_performance={
                 "revenue_by_provider": prov_rev,
                 "services_by_provider": prov_serv
-            }
+            },
+            top_patients=await self.repository.get_top_patients(),
+            retention_opportunities=await self.repository.get_retention_opportunities()
         )
+
