@@ -3,6 +3,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Dict, Any, List
 import json
 
+"""
+Controller for Administrative tasks.
+Handles data import from JSON files for various entities (patients, providers, services, etc.)
+and basic administrative security.
+"""
+
 from database import get_db
 from services.import_service import ImportService
 
@@ -12,6 +18,10 @@ router = APIRouter(prefix="/admin", tags=["Admin"])
 ADMIN_SECRET_KEY = "super-secret-admin-key-change-me"
 
 async def verify_admin(x_admin_key: str = Header(...)):
+    """
+    Simple verification for admin endpoints.
+    Checks the 'x-admin-key' header against the configured secret.
+    """
     if x_admin_key != ADMIN_SECRET_KEY:
         raise HTTPException(status_code=403, detail="Invalid Admin Key")
 
@@ -38,9 +48,11 @@ async def import_data(
     if not isinstance(data, list):
         raise HTTPException(status_code=400, detail="JSON must be a list of objects")
 
+    # Initialize the import service with the database session
     service = ImportService(session)
 
     try:
+        # Route the import to the correct method based on the 'type' header
         if type == "patients":
             await service.upsert_patients(data)
         elif type == "providers":
@@ -56,6 +68,7 @@ async def import_data(
         else:
             raise HTTPException(status_code=400, detail=f"Unknown data type: {type}")
     except Exception as e:
+        # Handle integrity errors specifically to guide the user on dependency order
         error_msg = str(e)
         if "IntegrityError" in error_msg or "ForeignKeyViolationError" in error_msg:
             raise HTTPException(

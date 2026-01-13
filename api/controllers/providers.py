@@ -2,6 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from typing import List
+
+"""
+Controller for Providers.
+Manages provider profiles, searches, and provider-specific analytics.
+"""
 from database import get_db
 from repositories.provider import ProviderRepository
 from services.provider import ProviderService
@@ -19,6 +24,10 @@ def get_provider_service(repository: ProviderRepository = Depends(get_provider_r
 async def read_provider_analytics(
     service: ProviderService = Depends(get_provider_service)
 ):
+    """
+    Get performance analytics for all providers.
+    Includes metrics like revenue, appointment counts, and retention rates.
+    """
     return await service.get_provider_analytics()
 
 @router.get("/", response_model=PaginatedProvidersResponse)

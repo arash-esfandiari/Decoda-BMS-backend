@@ -2,6 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
+"""
+Controller for Patient Management.
+Handles listing, searching, creating (via import), and retrieving patient details.
+Also provides patient-centric analytics.
+"""
+
 from database import get_db
 from repositories.patient import PatientRepository
 from services.patient import PatientService
@@ -25,6 +31,9 @@ async def read_patients(
     sort_order: str = "asc",
     service: PatientService = Depends(get_patient_service)
 ):
+    """
+    Get a paginated list of patients with optional search and sorting.
+    """
     return await service.get_patients(
         skip=skip, 
         limit=limit,

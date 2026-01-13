@@ -2,6 +2,11 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
+"""
+Controller for Services.
+Manages service catalog, price lookups, and service popularity analytics.
+"""
+
 from database import get_db
 from repositories.service import ServiceRepository
 from services.service import ServiceService
@@ -36,4 +41,7 @@ async def read_services(
 async def read_service_analytics(
     service: ServiceService = Depends(get_service_service)
 ):
+    """
+    Get analytics for services to identify top-performing treatments.
+    """
     return await service.get_service_analytics()

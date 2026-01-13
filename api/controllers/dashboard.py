@@ -4,6 +4,16 @@ from sqlalchemy import select, func, and_
 from sqlalchemy.orm import selectinload
 from datetime import datetime, timedelta
 
+"""
+Controller for the Dashboard.
+Aggregates high-level data for the main dashboard view, including:
+- Appointments today
+- Revenue forecast
+- New patients
+- Pending actions
+- Timeline of upcoming appointments
+"""
+
 from database import get_db
 from models import Appointment, AppointmentService, Patient, Service
 from schemas import DashboardSummary
@@ -15,7 +25,9 @@ async def get_dashboard_summary(session: AsyncSession = Depends(get_db)):
     today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     today_end = today_start + timedelta(days=1)
 
+    # ---------------------------------------------------------
     # 1. Appointments Today & Revenue Forecast
+    # ---------------------------------------------------------
     # Find appointments with any service starting today
     stmt_today = (
         select(Appointment)
@@ -52,7 +64,9 @@ async def get_dashboard_summary(session: AsyncSession = Depends(get_db)):
                  if svc.service.price:
                      revenue_forecast += svc.service.price
 
+    # ---------------------------------------------------------
     # 2. New Patients Today
+    # ---------------------------------------------------------
     stmt_patients = (
         select(func.count(Patient.id))
         .where(
@@ -65,7 +79,9 @@ async def get_dashboard_summary(session: AsyncSession = Depends(get_db)):
     result_patients = await session.execute(stmt_patients)
     new_patients_today = result_patients.scalar() or 0
 
+    # ---------------------------------------------------------
     # 3. Pending Actions (Appointments with status 'pending')
+    # ---------------------------------------------------------
     stmt_pending = (
         select(func.count(Appointment.id))
         .where(Appointment.status == "pending")
@@ -73,8 +89,10 @@ async def get_dashboard_summary(session: AsyncSession = Depends(get_db)):
     result_pending = await session.execute(stmt_pending)
     pending_actions = result_pending.scalar() or 0
 
+    # ---------------------------------------------------------
     # 4. Upcoming/Today's Timeline (Reuse appointments_today_list)
-    # Sort by start time
+    # ---------------------------------------------------------
+    # Sort by start time of the service that falls within today
     def get_start_time(apt):
         starts = [s.start for s in apt.services if s.start and s.start >= today_start and s.start < today_end]
         return min(starts) if starts else datetime.max

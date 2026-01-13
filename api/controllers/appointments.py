@@ -2,6 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
+"""
+Controller for Appointments.
+Manages appointment creation, retrieval, searching, and analytics.
+"""
+
 from database import get_db
 from repositories.appointment import AppointmentRepository
 from services.appointment import AppointmentService
@@ -13,6 +18,7 @@ def get_appointment_repository(session: AsyncSession = Depends(get_db)) -> Appoi
     return AppointmentRepository(session)
 
 def get_appointment_service(repository: AppointmentRepository = Depends(get_appointment_repository)) -> AppointmentService:
+    """Dependency injection for AppointmentService"""
     return AppointmentService(repository)
 
 @router.get("/analytics")
@@ -24,6 +30,7 @@ async def read_appointment_analytics(
 
 @router.get("/", response_model=PaginatedAppointmentsResponse)
 async def read_appointments(
+    # Pagination, search, sorting, and filtering parameters
     skip: int = 0, 
     limit: int = 100,
     search: str = None,
@@ -32,6 +39,10 @@ async def read_appointments(
     date_filter: str = None,
     service: AppointmentService = Depends(get_appointment_service)
 ):
+    """
+    Retrieve a paginated list of appointments.
+    Supports filtering by date, text search, and sorting.
+    """
     return await service.get_appointments(
         skip=skip, 
         limit=limit,

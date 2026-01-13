@@ -118,3 +118,15 @@ The design prioritizes usability and clarity, ensuring that front desk staff and
 - Working, well written and **deployed** application with database, backend, frontend and a publically available link.
 - GitHub link to the repository.
 - README with any thoughts you have or enhancements you would like to make later.
+
+## Future Enhancements
+- We can later leverage LangChain to allow the frontdesk staff and management to engage in conversation with the system and get insights and recommendations based on the data.
+- RBAC (Role Based Access Control) to add patients, appointments, services, providers, and payments.
+- Enchanced recommendation system to call back customers to book their next appointment. 
+- Special deals/offers to customers who have not booked an appointment in a while.
+- Rewards program for customers.
+- And more
+
+## GitHub Links
+- Backend: https://github.com/arash-esfandiari/Decoda-BMS-backend
+- Frontend: https://github.com/arash-esfandiari/Decoda-BMS-frontend
