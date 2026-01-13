@@ -1,0 +1,82 @@
+[
+  {
+    "id": "svc_61c231a745be9556",
+    "name": "Botox Injection",
+    "description": "Ask kind little who fall everyone.",
+    "price": 29205,
+    "duration": 30,
+    "created_date": "2024-11-26T18:37:46.229169"
+  },
+  {
+    "id": "svc_61c231a7129bf89f",
+    "name": "Dermal Filler",
+    "description": "History rather other drug test. Economic accept fire look product charge.",
+    "price": 33925,
+    "duration": 45,
+    "created_date": "2024-11-26T18:37:46.229211"
+  },
+  {
+    "id": "svc_61c231a70d9fe1fe",
+    "name": "Chemical Peel",
+    "description": "Method front show child mission behavior energy. White body reason everything western expect leg.",
+    "price": 48645,
+    "duration": 15,
+    "created_date": "2024-11-26T18:37:46.229254"
+  },
+  {
+    "id": "svc_61c231a72d7eea9e",
+    "name": "Microneedling",
+    "description": "Company list rock popular talk speech professional. Man her how the.\nYard board consider food.",
+    "price": 49471,
+    "duration": 45,
+    "created_date": "2024-11-26T18:37:46.229311"
+  },
+  {
+    "id": "svc_61c231a7bc71e132",
+    "name": "HydraFacial",
+    "description": "Check identify suddenly under. Catch color born. Life mother they.",
+    "price": 10948,
+    "duration": 60,
+    "created_date": "2024-11-26T18:37:46.229371"
+  },
+  {
+    "id": "svc_61c231a7c65a4955",
+    "name": "Laser Hair Removal",
+    "description": "Evening realize international but budget.",
+    "price": 9359,
+    "duration": 90,
+    "created_date": "2024-11-26T18:37:46.229393"
+  },
+  {
+    "id": "svc_61c231a73bb1ffea",
+    "name": "CoolSculpting",
+    "description": "Cup mouth find issue food. Again top responsibility reduce. Present over last.",
+    "price": 43222,
+    "duration": 15,
+    "created_date": "2024-11-26T18:37:46.229453"
+  },
+  {
+    "id": "svc_61c231a760dfb88b",
+    "name": "RF Skin Tightening",
+    "description": "Friend great seek away. American style truth during sure tend seat.",
+    "price": 28375,
+    "duration": 60,
+    "created_date": "2024-11-26T18:37:46.229494"
+  },
+  {
+    "id": "svc_61c231a7fb012e83",
+    "name": "Facial Treatment",
+    "description": "Give man paper key once color. Bed forget society yeah.",
+    "price": 15497,
+    "duration": 60,
+    "created_date": "2024-11-26T18:37:46.229540"
+  },
+  {
+    "id": "svc_61c231a781c295e7",
+    "name": "Body Contouring",
+    "description": "Describe opportunity everybody get friend write believe. Source any practice whether event really.",
+    "price": 22863,
+    "duration": 90,
+    "created_date": "2024-11-26T18:37:46.229559"
+  }
+]
