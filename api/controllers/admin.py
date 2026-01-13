@@ -26,6 +26,9 @@ async def import_data(
     Import data from a JSON file. 
     'type' header determines the entity type.
     """
+    # Disable endpoint temporarily
+    raise HTTPException(status_code=403, detail="Data import functionality is currently disabled.")
+
     content = await file.read()
     try:
         data = json.loads(content)
