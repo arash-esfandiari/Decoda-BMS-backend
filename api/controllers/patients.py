@@ -12,7 +12,7 @@ from database import get_db
 from repositories.patient import PatientRepository
 from services.patient import PatientService
 from schemas import Patient as PatientSchema, PaginatedPatientsResponse
-from api.analytics_schema import PatientAnalyticsResponse
+from schemas import PatientAnalyticsResponse
 
 router = APIRouter(prefix="/patients", tags=["Patients"])
 

@@ -1,5 +1,5 @@
 from repositories.analytics import AnalyticsRepository
-from api.analytics_schema import AnalyticsSummary, StatItem
+from schemas import AnalyticsSummary, StatItem
 
 class AnalyticsService:
     def __init__(self, repository: AnalyticsRepository):
@@ -99,4 +99,3 @@ class AnalyticsService:
             top_patients=await self.repository.get_top_patients(),
             retention_opportunities=await self.repository.get_retention_opportunities()
         )
-

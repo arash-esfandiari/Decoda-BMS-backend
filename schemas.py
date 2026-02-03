@@ -1,7 +1,46 @@
 from datetime import datetime
-from typing import Literal, Optional, List, Dict, Any
+from typing import Literal, Optional, List
 from pydantic import BaseModel, ConfigDict
 
+
+
+class StatItem(BaseModel):
+    label: str
+    value: float
+
+
+class PatientDemographics(BaseModel):
+    by_age: List[StatItem]
+    by_gender: List[StatItem]
+
+
+class RevenueTrend(BaseModel):
+    date: str  # "YYYY-MM"
+    value: float
+
+
+class AppointmentPattern(BaseModel):
+    busiest_days: List[StatItem]
+
+
+class ProviderPerformance(BaseModel):
+    revenue_by_provider: List[StatItem]
+    services_by_provider: List[StatItem]
+
+
+class AnalyticsSummary(BaseModel):
+    total_revenue: int
+    total_patients: int
+    total_appointments: int
+    patients_by_source: List[StatItem]
+    top_services: List[StatItem]
+    appointments_by_status: List[StatItem]
+    demographics: PatientDemographics
+    revenue_trend: List[RevenueTrend]
+    patterns: AppointmentPattern
+    provider_performance: ProviderPerformance
+    top_patients: List["TopPatient"] = []
+    retention_opportunities: List["RetentionOpportunity"] = []
 
 
 class PatientListItem(BaseModel):
@@ -77,10 +116,10 @@ class RetentionOpportunity(BaseModel):
 
 class PatientAnalyticsResponse(BaseModel):
     total_patients: int
-    by_source: List[Dict[str, Any]]
-    by_gender: List[Dict[str, Any]]
+    by_source: List[StatItem]
+    by_gender: List[StatItem]
     average_age: float
-    by_decade: List[Dict[str, Any]]
+    by_decade: List[StatItem]
     top_patients: List[TopPatient] = []
     retention_opportunities: List[RetentionOpportunity] = []
 
