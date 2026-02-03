@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Literal, Optional, List
+from typing import Literal, Optional, List, Dict, Any
 from pydantic import BaseModel, ConfigDict
 
 
@@ -41,6 +41,27 @@ class AnalyticsSummary(BaseModel):
     provider_performance: ProviderPerformance
     top_patients: List["TopPatient"] = []
     retention_opportunities: List["RetentionOpportunity"] = []
+
+
+class QueryRequest(BaseModel):
+    sql: str
+    limit: int | None = 200
+
+
+class QueryResponse(BaseModel):
+    rows: List[Dict[str, Any]]
+    row_count: int
+
+
+class ChatRequest(BaseModel):
+    question: str
+    limit: int | None = 200
+
+
+class ChatResponse(BaseModel):
+    answer: str
+    sql: str
+    rows: List[Dict[str, Any]]
 
 
 class PatientListItem(BaseModel):

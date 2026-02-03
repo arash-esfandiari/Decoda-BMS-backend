@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
-from api.controllers import patients, analytics, appointments, services, providers, dashboard, admin
+from api.controllers import patients, analytics, appointments, services, providers, dashboard, admin, chat
 
 from sqlalchemy import select
 from database import AsyncSessionLocal
@@ -47,6 +47,7 @@ app.include_router(services.router)
 app.include_router(providers.router)
 app.include_router(dashboard.router)
 app.include_router(admin.router)
+app.include_router(chat.router)
 
 @app.get("/")
 async def root():
